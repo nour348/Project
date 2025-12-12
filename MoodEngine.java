@@ -41,8 +41,10 @@ public class MoodEngine {
             System.out.println("1. Add Today's Mood");
             System.out.println("2. Analyze Mood");
             System.out.println("3. Suggest Tasks for Mood");
-            System.out.println("4. View Mood History");
-            System.out.println("5. Back");
+            System.out.println("4. Suggest habit for Mood");
+            System.out.println("5. View Mood History");
+            System.out.println("6. Back");
+
 
             String choice = input.nextLine();
 
@@ -50,8 +52,9 @@ public class MoodEngine {
                 case "1": addMood(); break;
                 case "2": analyzeMood(); break;
                 case "3": suggestTaskBasedOnMood(); break;
-                case "4": viewMoodHistory(); break;
-                case "5": saveMoodHistory(); return;  // Save on exit
+                case "4": suggestHabitBasedOnMood(); break;
+                case "5": viewMoodHistory(); break;
+                case "6": saveMoodHistory(); return;  // Save on exit
                 default: System.out.println("Invalid, try again.");
             }
         }
@@ -169,6 +172,57 @@ public class MoodEngine {
                 break;
         }
     }
+
+        // ========================================================
+        // 5. SUGGEST HABITS BASED ON MOOD
+        // ========================================================
+     public void suggestHabitBasedOnMood() {
+    	 
+       String today = LocalDate.now().toString();
+
+     if (!moodHistory.containsKey(today)) {
+         System.out.println("Add your mood first.");
+         return;
+     }
+
+     String mood = moodHistory.get(today);
+
+     System.out.println("\nBased on your mood (" + mood + "), suggested habits:");
+
+     if (habitEngine.habits == null || habitEngine.habits.isEmpty()) {
+         System.out.println("No habits available to suggest.");
+         return;
+     }
+
+     for (HabitEngine.Habit h : habitEngine.habits) {
+         switch (mood) {
+             case "HAPPY":
+                 // Suggest challenging habits
+                 if (h.streak < h.goal) 
+                     System.out.println("- Try to push forward with: " + h.title);
+                 break;
+             case "GOOD":
+                 // Suggest regular habits
+                 System.out.println("- Keep up with: " + h.title);
+                 break;
+             case "NEUTRAL":
+                 // Suggest light habits
+                 System.out.println("- Easy habit to do today: " + h.title);
+                 break;
+             case "SAD":
+                 // Suggest calming habits
+                 if (h.frequency.equals("DAILY"))
+                     System.out.println("- Calm daily habit: " + h.title);
+                 break;
+             case "STRESSED":
+             case "AWFUL":
+                 // Suggest low-pressure habits
+                 System.out.println("- Do something light: " + h.title);
+                 break;
+         }
+     }
+ }
+
 
     // ========================================================
     // 4. VIEW MOOD HISTORY
